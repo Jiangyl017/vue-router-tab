@@ -105,9 +105,6 @@ export default {
       // 路由匹配信息
       routeMatch: new RouteMatch(this),
 
-      // 页面路由索引
-      routeIndex: this.getRouteIndex(),
-
       // 是否正在更新
       onRefresh: false
     }
@@ -124,6 +121,11 @@ export default {
       'basePath',
       'alivePath'
     ]),
+
+    // 页面路由索引
+    routeIndex() {
+      return this.$route.matched.length - 1
+    },
 
     // 监听子页面钩子
     hooks() {
@@ -199,23 +201,6 @@ export default {
   },
 
   methods: {
-    // 获取页面路由索引
-    getRouteIndex() {
-      let cur = this
-      let depth = -1 // 路由深度
-
-      while (cur && depth < 0) {
-        const { data } = cur.$vnode || {}
-        if (data && data.routerView) {
-          depth = data.routerViewDepth
-        } else {
-          cur = cur.$parent
-        }
-      }
-
-      return depth + 1
-    },
-
     // 移除缓存
     remove(key = this.key) {
       const $alive = this.$refs.alive
@@ -245,6 +230,7 @@ export default {
           return true
         }
       })
+      delete this.cache[key]
     },
 
     // 刷新
