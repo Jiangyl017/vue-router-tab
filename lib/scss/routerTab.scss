@@ -222,6 +222,7 @@ $close-icon-size: 13px;
 
   // 页面容器
   &__container {
+    display: flex;
     position: relative;
     flex: 1;
     overflow-x: hidden;

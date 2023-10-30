@@ -35,6 +35,7 @@
 
     <!-- 页面容器 -->
     <div class="router-tab__container">
+      <slot name="sider" />
       <router-alive
         page-class="router-tab-page"
         :keep-alive="keepAlive"
