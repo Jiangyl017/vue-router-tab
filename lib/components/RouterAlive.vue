@@ -37,6 +37,7 @@
 <script>
 import { remove, mapGetters, getTransOpt, getCtorId } from '../util'
 import RouteMatch from '../util/RouteMatch'
+import { parseRouteKey } from '../util/RouteMatch'
 
 // 页面监听钩子
 const PAGE_HOOKS = [
@@ -61,6 +62,11 @@ export default {
   },
 
   props: {
+    navigateSource: {
+      type: String,
+      default: ''
+    },
+
     // 默认是否开启缓存
     keepAlive: {
       type: Boolean,
@@ -171,15 +177,23 @@ export default {
             this.nestForceUpdate = true
           }
         }
+        // 导航触发来源为open方法: 正常打开新页签
+        if (this.navigateSource === 'open') {
+          this.$emit('update:navigateSource', 'null')
+          // 类型：更新或者新建缓存
+          const type = cacheAlivePath ? 'update' : 'create'
 
-        // 类型：更新或者新建缓存
-        const type = cacheAlivePath ? 'update' : 'create'
+          this.$emit('change', type, this.routeMatch)
 
-        this.$emit('change', type, this.routeMatch)
-
-        // 更新缓存路径
-        if (alive) {
-          cacheItem.fullPath = $route.fullPath
+          // 更新缓存路径
+          if (alive) {
+            cacheItem.fullPath = $route.fullPath
+          }
+        } else {
+          // 导航来源不是open方法的情况: 替换页签
+          if (old)
+            this.routeMatch.oldKey = parseRouteKey(old, old, old.meta.key)
+          this.$emit('change', 'replace', this.routeMatch)
         }
       },
 
@@ -224,7 +238,8 @@ export default {
           // 销毁组件实例
           vm.$destroy()
 
-          cache[id] = null
+          // cache[id] = null
+          delete cache[id]
           remove(keys, id)
 
           return true

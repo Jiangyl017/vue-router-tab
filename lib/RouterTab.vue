@@ -43,6 +43,7 @@
         :max="maxAlive"
         :transition="pageTrans"
         :page-scroller="pageScroller"
+        :navigate-source.sync="navigateSource"
         @ready="onAliveReady"
         @change="onAliveChange"
       />
